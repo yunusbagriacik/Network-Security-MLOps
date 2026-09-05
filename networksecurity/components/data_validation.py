@@ -3,7 +3,7 @@ from networksecurity.entity.config_entity import DataValidationConfig
 from networksecurity.exception.exception import NetworkSecurityException
 from networksecurity.logging.logger import logging
 from networksecurity.constants.training_pipeline import SCHEMA_FILE_PATH
-from networksecurity.utils.main_utils.utils import read_yaml_file
+from networksecurity.utils.main_utils.utils import read_yaml_file, write_yaml_file
 from scipy.stats import ks_2samp
 import pandas as pd
 import os, sys
@@ -42,7 +42,7 @@ class DataValidation:
 
 
 
-    def detect_dataset_drift(self, base_df, current_df, threshold=0.05) -> bool:
+    def detect_dataset_drift(self, base_df, current_df, threshold=0.05) -> None:
         try:
             status = True
             report = {}
@@ -55,9 +55,22 @@ class DataValidation:
                 else:
                     is_found = True
                     status = False
+                report.update({column:{
+                    "p_value": float(is_same_dist.pvalue),
+                    "drift_status" :is_found
+
+                    }})
+
+            drift_report_file_path = self.data_validation_config.drift_report_file_path
+
+            # Create directory
+            dir_path = os.path.dirname(drift_report_file_path)
+            os.makedirs(dir_path, exist_ok=True)
+            write_yaml_file(file_path=drift_report_file_path, content=report)
 
         except Exception as e:
             raise NetworkSecurityException(e,sys)
+
 
 
 
