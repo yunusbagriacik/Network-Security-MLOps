@@ -13,13 +13,17 @@ if __name__ == '__main__':
         dataingestionconfig = DataIngestionConfig(trainingpipelineconfig)
         data_ingestion = DataIngestion(dataingestionconfig)
         logging.info("Initiate the data ingestion")
-        data_ingestion_artifact = data_ingestion.initiate_data_ingestion()
-        logging.info("Data Initiation completed")
+        dataingestionartifact = data_ingestion.initiate_data_ingestion()
+        logging.info("Data Initiation Completed!")
+        print(dataingestionartifact)
         data_validation_config = DataValidationConfig(trainingpipelineconfig)
-        data_validation = DataValidation(dataingestionconfig, data_validation_config)
+        data_validation = DataValidation(dataingestionartifact,data_validation_config)
         logging.info("Initiate the data validation")
+        datavalidationartifact = data_validation.initiate_data_validation()
+        logging.info("Data Validation Completed!")
         data_validation.initiate_data_validation()
-        print(data_ingestion_artifact)
+        print(datavalidationartifact)
+        
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)
