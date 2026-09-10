@@ -23,16 +23,6 @@ from sklearn.ensemble import (
     GradientBoostingClassifier,
     RandomForestClassifier,
 )
-import mlflow
-from urllib.parse import urlparse
-
-import dagshub
-#dagshub.init(repo_owner='krishnaik06', repo_name='networksecurity', mlflow=True)
-
-os.environ["MLFLOW_TRACKING_URI"]="https://dagshub.com/krishnaik06/networksecurity.mlflow"
-os.environ["MLFLOW_TRACKING_USERNAME"]="yunusbagriacik"
-os.environ["MLFLOW_TRACKING_PASSWORD"]="7104284f1bb44ece21e0e2adb4e36a250ae3251f"
-
 
 
 
@@ -45,7 +35,7 @@ class ModelTrainer:
         except Exception as e:
             raise NetworkSecurityException(e,sys)
         
-    def track_mlflow(self,best_model,classificationmetric):
+    """def track_mlflow(self,best_model,classificationmetric):
         mlflow.set_registry_uri("https://dagshub.com/krishnaik06/networksecurity.mlflow")
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
         with mlflow.start_run():
@@ -69,10 +59,10 @@ class ModelTrainer:
                 mlflow.sklearn.log_model(best_model, "model", registered_model_name=best_model)
             else:
                 mlflow.sklearn.log_model(best_model, "model")
-
+"""
 
         
-    def train_model(self,X_train,y_train,x_test,y_test):
+    def train_model(self, X_train, y_train, x_test, y_test):
         models = {
                 "Random Forest": RandomForestClassifier(verbose=1),
                 "Decision Tree": DecisionTreeClassifier(),
@@ -107,7 +97,7 @@ class ModelTrainer:
             }
             
         }
-        model_report:dict=evaluate_models(X_train=X_train,y_train=y_train,X_test=x_test,y_test=y_test,
+        model_report:dict = evaluate_models(X_train=X_train,y_train=y_train,X_test=x_test,y_test=y_test,
                                           models=models,param=params)
         
         ## To get best model score from dict
@@ -121,16 +111,16 @@ class ModelTrainer:
         best_model = models[best_model_name]
         y_train_pred=best_model.predict(X_train)
 
-        classification_train_metric=get_classification_score(y_true=y_train,y_pred=y_train_pred)
+        classification_train_metric=get_classification_score(y_true=y_train, y_pred=y_train_pred)
         
         ## Track the experiements with mlflow
-        self.track_mlflow(best_model,classification_train_metric)
+        #self.track_mlflow(best_model,classification_train_metric)
 
 
         y_test_pred=best_model.predict(x_test)
-        classification_test_metric=get_classification_score(y_true=y_test,y_pred=y_test_pred)
+        classification_test_metric=get_classification_score(y_true=y_test, y_pred=y_test_pred)
 
-        self.track_mlflow(best_model,classification_test_metric)
+        #self.track_mlflow(best_model,classification_test_metric)
 
         preprocessor = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
             
