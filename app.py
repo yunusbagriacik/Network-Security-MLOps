@@ -20,3 +20,33 @@ from uvicorn import run as app_run
 from fastapi.responses import Response
 from starlette.responses import RedirectResponse
 import pandas as pd
+
+from networksecurity.utils.main_utils.utils import load_object
+from networksecurity.utils.ml_utils.model.estimator import NetworkModel
+
+client = pymongo.MongoClient(mongo_db_url, tlsCAFile=ca)
+
+from networksecurity.constants.training_pipeline import DATA_INGESTION_COLLECTION_NAME
+from networksecurity.constants.training_pipeline import DATA_INGESTION_DATABASE_NAME
+
+database = client[DATA_INGESTION_DATABASE_NAME]
+collection = database[DATA_INGESTION_COLLECTION_NAME]
+
+app = FastAPI()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/", tags=["authentication"])
+async def index():
+    return RedirectResponse(url="/docs")
+
+
+
