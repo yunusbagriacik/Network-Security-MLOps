@@ -7,5 +7,6 @@ pymongo>=4.7
 scikit-learn
 mlflow
 pyaml
+dagshub
 
 ## -e .
